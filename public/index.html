@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id" class="">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Sertifikat Neobrutalism</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Configuration untuk Dark Mode -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- html2pdf.js via CDN untuk cetak PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Google Fonts (Inter untuk gaya modern) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        .neo-shadow {
+            box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        .neo-shadow-lg {
+            box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        .neo-shadow-sm {
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        .active\:neo-shadow-none:active {
+            box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
+            transform: translate(4px, 4px);
+        }
+
+        .avoid-break {
+            page-break-inside: avoid;
+        }
+    </style>
+</head>
+
+<body
+    class="min-h-screen font-sans transition-colors duration-300 bg-yellow-50 dark:bg-zinc-900 text-black dark:text-white p-4 md:p-8">
+
+    <!-- Header / Navbar Neobrutalism -->
+    <header
+        class="flex justify-between items-center mb-8 p-4 border-4 border-black rounded-xl neo-shadow bg-white dark:bg-zinc-800">
+        <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg border-2 border-black bg-lime-400 dark:bg-indigo-500">
+                <i data-lucide="terminal" class="text-black stroke-[2.5px]"></i>
+            </div>
+            <h1 class="text-xl md:text-2xl font-black tracking-tight uppercase dark:text-white">Sertifikat Ekskul TIK
+            </h1>
+        </div>
+
+        <button id="themeToggleBtn"
+            class="p-3 rounded-full border-4 border-black font-bold transition-all neo-shadow-sm active:neo-shadow-none bg-zinc-800 text-white dark:bg-yellow-400 dark:text-black"
+            title="Toggle Theme">
+            <i id="themeIcon" data-lucide="moon" class="stroke-[3px]"></i>
+        </button>
+    </header>
+
+    <!-- Main Content: Form & Preview -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Kolom Kiri: Form Input -->
+        <section class="lg:col-span-4 p-6 border-4 border-black rounded-xl neo-shadow-lg bg-pink-300 dark:bg-zinc-800">
+            <h2 class="text-2xl font-black mb-6 flex items-center gap-2 border-b-4 border-black pb-4 dark:text-white">
+                <i data-lucide="code" class="w-7 h-7"></i> Data Siswa
+            </h2>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-lg font-bold mb-2 uppercase tracking-wide dark:text-white">Nama
+                        Lengkap</label>
+                    <input type="text" id="inputName" placeholder="Misal: Budi Santoso"
+                        class="w-full p-4 text-lg border-4 border-black rounded-lg focus:outline-none focus:ring-4 focus:ring-black/20 transition-all font-medium text-black bg-white dark:bg-zinc-200" />
+                </div>
+
+                <div>
+                    <label class="block text-lg font-bold mb-2 uppercase tracking-wide dark:text-white">Kelas</label>
+                    <input type="text" id="inputClass" placeholder="Misal: 5A"
+                        class="w-full p-4 text-lg border-4 border-black rounded-lg focus:outline-none focus:ring-4 focus:ring-black/20 transition-all font-medium text-black bg-white dark:bg-zinc-200" />
+                </div>
+
+                <div>
+                    <label class="block text-lg font-bold mb-2 uppercase tracking-wide dark:text-white">Ukuran
+                        Kertas</label>
+                    <select id="inputPaperSize"
+                        class="w-full p-4 text-lg border-4 border-black rounded-lg focus:outline-none focus:ring-4 focus:ring-black/20 transition-all font-bold text-black bg-white dark:bg-zinc-200 cursor-pointer">
+                        <option value="a4">A4 (210 x 297 mm)</option>
+                        <option value="f4">F4 / Folio (215 x 330 mm)</option>
+                    </select>
+                </div>
+
+                <div class="mt-6 p-4 border-4 border-black rounded-lg neo-shadow-sm bg-yellow-300 dark:bg-indigo-600">
+                    <p class="font-bold flex items-start gap-2 dark:text-white">
+                        <i data-lucide="sparkles" class="shrink-0 mt-0.5"></i>
+                        <span>Nilai otomatis "A" dan silabus pembelajaran akan di-generate!</span>
+                    </p>
+                </div>
+
+                <div class="pt-4 border-t-4 border-black dark:border-white/20 mt-6">
+                    <button id="btnRefreshQuote"
+                        class="w-full p-3 font-bold bg-white text-black border-4 border-black rounded-lg neo-shadow-sm active:neo-shadow-none transition-all flex items-center justify-center gap-2 hover:bg-lime-300">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i> Acak Ulang Motivasi
+                    </button>
+                </div>
+
+                <!-- Tombol Download PDF -->
+                <div class="pt-6 mt-6 border-t-4 border-black dark:border-white/20">
+                    <button id="btnDownloadPdf"
+                        class="w-full p-4 text-xl font-black bg-lime-400 text-black border-4 border-black rounded-xl neo-shadow-lg active:neo-shadow-none transition-all flex items-center justify-center gap-3 hover:bg-lime-500">
+                        <i data-lucide="download" class="w-6 h-6 stroke-[3px]"></i> Download PDF
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kolom Kanan: Live Preview Certificate -->
+        <section
+            class="lg:col-span-8 p-6 border-4 border-black rounded-xl neo-shadow-lg flex flex-col bg-cyan-300 dark:bg-zinc-800">
+            <div class="flex justify-between items-end mb-6 border-b-4 border-black pb-4">
+                <h2 class="text-2xl font-black dark:text-white">Live Preview Sertifikat</h2>
+                <span id="previewPaperLabel"
+                    class="text-sm font-bold bg-white text-black px-3 py-1 border-2 border-black rounded-md neo-shadow-sm">
+                    Kertas A4 (Landscape)
+                </span>
+            </div>
+
+            <div class="w-full flex justify-center overflow-x-auto pb-10 px-4">
+
+                <!-- EXPORT WRAPPER: Diatur secara absolut 1122x793px untuk A4 (rasio presisi tinggi) dan padding 36px konstan agar margin putih rapi -->
+                <div id="exportWrapper"
+                    class="bg-white shrink-0 mx-auto transition-all duration-300 flex items-center justify-center"
+                    style="width: 1122px; height: 793px; padding: 36px;">
+
+                    <!-- KANVAS SERTIFIKAT UTAMA: Menggunakan flex-col dan justify-between yang merata -->
+                    <div id="certificateCanvas"
+                        class="bg-[#faf8ef] border-4 border-black relative p-8 flex flex-col justify-between overflow-hidden text-black w-full h-full"
+                        style="box-shadow: 12px 12px 0px 0px rgba(0,0,0,1);">
+
+                        <!-- Elemen Latar Belakang -->
+                        <div class="absolute top-[-20px] right-[-20px] w-40 h-40 bg-pink-400 border-4 border-black rounded-full z-0"
+                            style="box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);"></div>
+                        <div class="absolute bottom-6 right-6 w-32 h-32 bg-yellow-400 border-4 border-black rotate-12 z-0"
+                            style="box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);"></div>
+                        <div class="absolute top-12 left-10 bg-cyan-300 border-4 border-black px-4 py-1 font-mono font-black text-2xl transform -rotate-6 z-0"
+                            style="box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);">&lt;code&gt;</div>
+                        <div class="absolute bottom-32 left-8 bg-white border-4 border-black px-3 py-2 font-mono font-black text-xl transform rotate-12 rounded-full z-0"
+                            style="box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);">{ }</div>
+                        <div class="absolute top-44 right-8 bg-lime-400 border-4 border-black px-3 py-1 font-mono font-black text-xl transform rotate-6 z-0"
+                            style="box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);">/&gt;</div>
+                        <div
+                            class="absolute top-1/2 left-4 text-3xl font-mono font-black text-black opacity-10 transform -rotate-90 z-0">
+                            &lt;div&gt;</div>
+                        <div
+                            class="absolute bottom-20 right-40 text-4xl font-mono font-black text-black opacity-10 transform -rotate-6 z-0">
+                            =&gt;</div>
+
+                        <!-- 1. HEADER SERTIFIKAT -->
+                        <div class="relative z-10 text-center border-b-4 border-black pb-3 shrink-0">
+                            <!-- Label Jam Cetak (Header Kiri Atas) -->
+                            <div class="absolute top-0 left-0 bg-yellow-200 border-2 border-black px-3 py-1 transform -rotate-3 z-30"
+                                style="box-shadow: 3px 3px 0px 0px rgba(0,0,0,1);">
+                                <p id="timestampText"
+                                    class="text-[12px] font-mono font-bold text-black tracking-tighter">
+                                    Dicetak pada: --/--/----
+                                </p>
+                            </div>
+                            <!-- Title -->
+                            <div class="inline-block bg-lime-400 border-4 border-black px-6 py-2 rounded-full mb-3 mt-6 lg:mt-0"
+                                style="box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);">
+                                <h3 class="text-lg font-bold tracking-widest uppercase">Ekstrakurikuler TIK 2026</h3>
+                            </div>
+                            <br>
+                            <div class="inline-block bg-white border-4 border-black px-6 py-2 transform -rotate-1 mt-1"
+                                style="box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);">
+                                <h1 class="text-5xl font-black uppercase tracking-tight text-black">Sertifikat
+                                    Penghargaan</h1>
+                            </div>
+                        </div>
+
+                        <!-- 2. KONTEN TENGAH: Nama dan Silabus -->
+                        <div class="relative z-10 flex flex-col justify-center flex-1 my-2">
+                            <p class="text-center text-xl font-medium mb-1">Diberikan dengan penuh kebanggaan kepada:
+                            </p>
+                            <div class="text-center mb-5">
+                                <h2 id="previewName"
+                                    class="text-4xl font-black uppercase inline-block border-b-4 border-black border-dashed pb-1">
+                                    [NAMA SISWA]</h2>
+                                <p class="text-lg font-bold mt-2">Dari Kelas <span id="previewClass"
+                                        class="bg-cyan-300 border-2 border-black px-2 py-1 rounded neo-shadow-sm inline-block">[KELAS]</span>
+                                </p>
+                            </div>
+
+                            <!-- Grid Tabel Predikat & Silabus -->
+                            <div class="grid grid-cols-3 gap-6 items-start">
+                                <!-- Box Predikat -->
+                                <div class="col-span-1 bg-white border-4 border-black rounded-xl p-4 text-center transform -rotate-2"
+                                    style="box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);">
+                                    <p class="font-bold text-sm uppercase mb-1">Predikat Akhir</p>
+                                    <div class="text-8xl font-black text-pink-500 mb-1 leading-none"
+                                        style="text-shadow: 4px 4px 0px #000;">A</div>
+                                    <p class="font-black text-sm uppercase mt-2 bg-black text-white py-1 rounded">Sangat
+                                        Memuaskan</p>
+                                </div>
+                                <!-- Tabel Silabus -->
+                                <div class="col-span-2 bg-white border-4 border-black rounded-xl overflow-hidden"
+                                    style="box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);">
+                                    <div
+                                        class="bg-lime-400 border-b-4 border-black p-2 font-black uppercase text-sm text-center">
+                                        Silabus & Total Pembelajaran Diselesaikan</div>
+                                    <table class="w-full text-sm font-medium">
+                                        <tbody>
+                                            <tr class="border-b-2 border-black">
+                                                <td class="p-2 border-r-2 border-black"><span
+                                                        class="font-mono bg-yellow-200 px-1 border border-black">{'01'}</span>
+                                                    Dasar Pemikiran Komputasional</td>
+                                                <td class="p-2 text-center font-bold w-20">2 JP</td>
+                                            </tr>
+                                            <tr class="border-b-2 border-black bg-gray-50">
+                                                <td class="p-2 border-r-2 border-black"><span
+                                                        class="font-mono bg-yellow-200 px-1 border border-black">{'02'}</span>
+                                                    Teknik Dasar Prompting AI</td>
+                                                <td class="p-2 text-center font-bold w-20">4 JP</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-2 border-r-2 border-black"><span
+                                                        class="font-mono bg-yellow-200 px-1 border border-black">{'03'}</span>
+                                                    Logika Pembuatan Website</td>
+                                                <td class="p-2 text-center font-bold w-20">2 JP</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. FOOTER: Kotak Pesan & Tanda Tangan (FIXED HEIGHT KUNCI ANTI-BERANTAKAN) -->
+                        <div
+                            class="relative z-20 border-t-4 border-black pt-4 flex justify-between items-center gap-6 shrink-0 h-[110px]">
+
+                            <!-- Area Pesan Khusus (Tinggi Terkunci) -->
+                            <div class="flex-1 h-full flex flex-col justify-end">
+                                <div class="inline-block">
+                                    <p
+                                        class="font-bold text-[11px] uppercase bg-black text-white inline-block px-3 py-1 mb-0 rounded-t-md">
+                                        Pesan Khusus:</p>
+                                </div>
+                                <div
+                                    class="bg-white border-4 border-black px-4 flex items-center rounded-b-xl rounded-tr-xl neo-shadow-sm h-[70px] overflow-hidden">
+                                    <p id="quoteText"
+                                        class="text-lg font-black italic text-gray-800 leading-snug w-full">
+                                        "Ketik, kompilasi, taklukkan."
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Kotak Tanda Tangan (Tinggi Terkunci) -->
+                            <div class="shrink-0 h-[90px] flex flex-col items-center justify-center text-center bg-white border-4 border-black px-4 rounded-xl transform -rotate-2 relative z-30"
+                                style="box-shadow: 6px 6px 0px 0px rgba(0,0,0,1); width: 230px;">
+                                <p class="font-bold text-[11px] uppercase mb-1 text-gray-700">Instruktur TIK</p>
+                                <h4 class="font-black text-xl border-b-4 border-black px-2 pb-1">Fauzan Zahtiyar</h4>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Akhir Kanvas -->
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Vanilla -->
+    <script>
+        lucide.createIcons();
+
+        const htmlElement = document.documentElement;
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        let isDarkMode = false;
+
+        themeToggleBtn.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            if (isDarkMode) {
+                htmlElement.classList.add('dark');
+                themeIcon.setAttribute('data-lucide', 'sun');
+            } else {
+                htmlElement.classList.remove('dark');
+                themeIcon.setAttribute('data-lucide', 'moon');
+            }
+            lucide.createIcons();
+        });
+
+        const inputName = document.getElementById('inputName');
+        const inputClass = document.getElementById('inputClass');
+        const previewName = document.getElementById('previewName');
+        const previewClass = document.getElementById('previewClass');
+        const inputPaperSize = document.getElementById('inputPaperSize');
+        const previewPaperLabel = document.getElementById('previewPaperLabel');
+        const exportWrapper = document.getElementById('exportWrapper');
+        const btnDownloadPdf = document.getElementById('btnDownloadPdf');
+
+        inputName.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            previewName.textContent = val !== '' ? val : '[NAMA SISWA]';
+        });
+
+        inputClass.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            previewClass.textContent = val !== '' ? val : '[KELAS]';
+        });
+
+        // 4. Penguncian Ukuran Resolusi Render (A4 & F4)
+        inputPaperSize.addEventListener('change', (e) => {
+            if (e.target.value === 'f4') {
+                previewPaperLabel.textContent = 'Kertas F4/Folio (Landscape)';
+                // Proporsi piksel murni dari F4 Landscape
+                exportWrapper.style.width = '1247px';
+                exportWrapper.style.height = '812px';
+            } else {
+                previewPaperLabel.textContent = 'Kertas A4 (Landscape)';
+                // Proporsi piksel murni dari A4 Landscape
+                exportWrapper.style.width = '1122px';
+                exportWrapper.style.height = '793px';
+            }
+        });
+
+        const quotes = [
+            "Bug adalah teman belajar.",
+            "Ketik, kompilasi, taklukkan.",
+            "Logika jalan, dunia di genggaman.",
+            "Masa depan diketik hari ini.",
+            "Satu baris, seribu karya.",
+            "Bukan sulap, ini sekadar kode!"
+        ];
+
+        const quoteTextElement = document.getElementById('quoteText');
+        const btnRefreshQuote = document.getElementById('btnRefreshQuote');
+
+        function generateRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            quoteTextElement.textContent = `"${quotes[randomIndex]}"`;
+        }
+
+        btnRefreshQuote.addEventListener('click', generateRandomQuote);
+        generateRandomQuote();
+
+        const timestampTextElement = document.getElementById('timestampText');
+
+        function updateTimestamp() {
+            const now = new Date();
+            const date = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const formattedTime = `Dicetak pada: ${date}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
+            timestampTextElement.textContent = formattedTime;
+        }
+
+        setInterval(updateTimestamp, 1000);
+        updateTimestamp();
+
+        // 5. Perbaikan Ekspor PDF MENGGUNAKAN PIKSEL PRESISI TINGGI
+        btnDownloadPdf.addEventListener('click', () => {
+            window.scrollTo(0, 0); // Cegah bug potong layar scroll
+
+            const originalHTML = btnDownloadPdf.innerHTML;
+            btnDownloadPdf.innerHTML = `<i data-lucide="loader" class="w-6 h-6 stroke-[3px] animate-spin"></i> Memproses PDF...`;
+            lucide.createIcons();
+
+            const nameVal = inputName.value.trim() || 'SISWA_TANPA_NAMA';
+            const classVal = inputClass.value.trim() || 'TANPA_KELAS';
+            const fileName = `${nameVal}_${classVal}_EKSKUL TIK.pdf`.toUpperCase();
+
+            // AMBIL DIMENSI PERSIS DARI ELEMEN DOM. Ini mengeliminasi 100% bug "Halaman Terpotong / 2 Halaman"
+            const domWidth = exportWrapper.offsetWidth;
+            const domHeight = exportWrapper.offsetHeight;
+
+            const opt = {
+                margin: 0,
+                filename: fileName,
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    scrollY: 0,
+                    scrollX: 0
+                },
+                // Format diubah menggunakan [Lebar, Tinggi] berbasis Piksel agar persis 1:1 dengan layout layar
+                jsPDF: { unit: 'px', format: [domWidth, domHeight], orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(exportWrapper).save().then(() => {
+                btnDownloadPdf.innerHTML = originalHTML;
+                lucide.createIcons();
+            }).catch(err => {
+                console.error('Error generating PDF:', err);
+                btnDownloadPdf.innerHTML = `<i data-lucide="x-circle" class="w-6 h-6 stroke-[3px]"></i> Gagal`;
+                lucide.createIcons();
+                setTimeout(() => {
+                    btnDownloadPdf.innerHTML = originalHTML;
+                    lucide.createIcons();
+                }, 2000);
+            });
+        });
+
+    </script>
+</body>
+
+</html>
